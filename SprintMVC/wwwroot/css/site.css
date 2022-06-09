@@ -1,0 +1,172 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+  color: #0366d6;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 50px;
+}
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px; /* Vertically center the text there */
+    background-color: white;
+}
+
+
+/***Modified***/
+
+img.H {
+    position:fixed;
+    left: 0px;
+    top: 0px;
+}
+
+.modal-header {
+    display: -ms-flexbox;
+    display: block;
+    -ms-flex-align: start;
+    align-items: flex-start;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding: 1rem 1rem;
+    border-bottom: 1px solid #dee2e6;
+    border-top-left-radius: 0.3rem;
+    border-top-right-radius: 0.3rem;
+}
+
+.A {
+    background-color: lightsteelblue;
+    text-shadow: #0a09be 2px 2px, #1776d0 4px 4px;
+}
+
+.B {
+    background-color: lightsteelblue;
+}
+
+.C {
+    background-color: lightblue;
+    color: black;
+    border: none;
+    padding: 10px 32px;
+}
+
+.C:hover {
+    background-color: white;
+    color: black;
+}
+
+.D {
+    background-color: lightsteelblue;
+}
+
+.E {
+    margin-left: 20px;
+}
+
+.F {
+    height: 40px;
+    color: #fff;
+    border: 1px solid transparent;
+    background: rgba(255,255,255,.08);
+    border-radius: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+    display: block;
+    width: 80%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.G {
+    height: 40px;
+    color: #fff;
+    border: 1px solid transparent;
+    background: rgba(255,255,255,.08);
+    border-radius: 40px;
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.I {
+    height: 40px;
+    color: #fff;
+    border: 1px solid transparent;
+    background: rgba(255,255,255,.08);
+    border-radius: 40px;
+    padding-top:-100px;
+    padding-left:400px;
+    padding-right: 200px;
+    display: block;
+    width: 50%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+
