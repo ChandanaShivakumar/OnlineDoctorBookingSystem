@@ -1,0 +1,392 @@
+﻿<script src="~/lib/jquery/dist/jquery.js"></script>
+<body style="background-color:#ffffb3;">
+<div class="container">
+    <h2>Appointments</h2>
+@*    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="clearTextBox();">Book New Appointment</button><br />
+*@        <hr />
+        <br />
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr bgcolor="#ffff4d">
+                <th>
+                    No
+                </th>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Time
+                </th>
+                <th>
+                   Notes
+                </th>
+                <th>
+                    Schedule_Id
+                </th>
+                <th>
+                    Patient_Id
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+        </thead>
+        <tbody class="tbody">
+        </tbody>
+    </table>
+    <div>
+        <button type="button" class="btn btn-primary" onclick="location.href='/Admin/Mainn/';">Dashboard</button>
+    </div>
+</div>
+<hr />
+</body>
+<!-- create a modal myModal-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="MyModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Book New Appointment</h4>
+            </div>
+            <div class="modal-body">
+                <form enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="Appointment_No">ID</label>
+                        <input type="text" class="form-control" id="Appointment_No" placeholder="No" disabled="disabled" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Appointment_Date">Date</label>
+                        <input type="text" class="form-control" id="Appointment_Date" placeholder="(YYYY-MM-DD)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Appointment_Time">Time</label>
+                        <input type="text" class="form-control" id="Appointment_Time" placeholder="(08:00:00)" />
+                    </div>
+                     <div class="form-group">
+                        <label for="Notes">Notes</label>
+                        <input type="text" class="form-control" id="Notes" placeholder="Reason for visit" />
+                    </div>
+                   <div class="form-group">
+                        <label for="Schedule_Id">Select Schedule Id</label>
+                        <div class="col-sm-7">
+                            <select id="Schedule_Id" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Patient_Id">Select Patient Id</label>
+                        <div class="col-sm-7">
+                            <select id="Patient_Id" class="form-control"></select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- Modal Footer-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnAdd" onclick="return Add();">Add</button>
+                <button type="button" class="btn btn-primary" id="btnUpdate" style="display:none;" onclick="Update();">Update</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- delete -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="myModalLabel1">Cancel Appointment</h4>
+            </div>
+            <div class="modal-body">
+                <h5>Are you sure you want to delete this record?</h5>
+                <input type="text" id="appointmentno" />
+            </div>
+            <!-- Modal Footer-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btndelete" onclick="return Delete();">Yes</button>
+
+                <button type="button" class="btn btn-success" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+@*<script>
+    $(document).ready(function () {
+        loadData();
+    });
+</script>*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        var items = "<option value=0>Select</option>";
+        //we want to add this option to subcategory 
+        $('#Schedule_Id').html(items);
+        $('#Patient_Id').html(items);
+        loadData();
+    });
+</script>
+<script type="text/javascript">
+
+
+  function loadData() {
+        $.ajax({
+            url: "http://localhost:14189/api/DoctorSchedule/GetDoctorSchedules",
+            type: "GET",
+            dataType: "json",
+            headers: {
+                Authorization: 'Bearer ' + sessionStorage.getItem("token")
+            },
+            success: function (result) {
+                var html = '';
+                $('#Schedule_Id').empty();
+                var items = "";
+                items = "<option value=0>Select</option>";
+                //loop the data
+                //debugger
+                $.each(result, function (i, Doctor_Schedule) {
+                    //we create the option
+                    items += "<option value='" + Doctor_Schedule.schedule_Id + "'>" + Doctor_Schedule.doctorName + "</option>";
+                });
+                //add all the items into the dropdownlist
+                $('#Schedule_Id').html(items);
+                //$('.tbody').html(html);
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+        $.ajax({
+            url: "http://localhost:14189/api/Patient/GetPatients",
+            type: "GET",
+            dataType: "json",
+            success: function (result) {
+                var html = '';
+                $('#Patient_Id').empty();
+                var items = "";
+                items = "<option value=0>Select</option>";
+                //loop the data
+                //debugger
+                $.each(result, function (i, Patient) {
+                    //we create the option
+                    items += "<option value='" + Patient.patient_Id + "'>" + Patient.patient_Name + "</option>";
+                });
+                //add all the items into the dropdownlist
+                $('#Patient_Id').html(items);
+                //$('.tbody').html(html);
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+        $.ajax({
+            url: "http://localhost:14189/api/Appointment/GetAppointments",
+            type: "GET",
+            dataType: "json",
+            success: function (result) {
+                var html = '';
+                $.each(result, function (key, item) {
+                    // debugger
+                    html += '<tr>';
+                    html += '<td>' + item.appointment_No + '</td>';
+                    html += '<td>' + item.appointment_Date + '</td>';
+                    html += '<td>' + item.appointment_Time + '</td>';
+                    html += '<td>' + item.notes + '</td>';
+                    html += '<td>' + item.schedule_Id + '</td>';
+                    html += '<td>' + item.patient_Id + '</td>';
+                                        
+                    html += '<td><a href="#" class="btn btn-danger"  onclick="Delele(' + item.appointment_No + ')">Delete</a></td>';
+                    html += '</tr>';
+                });
+                $('.tbody').html(html);
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+    }
+    function Add() {
+        var res = validate();
+        if (res == false) {
+            return false;
+        }
+        //creating the patient Object passing the values from the textbox
+        var appObj = {
+            Appointment_Date: $("#Appointment_Date").val(),
+            Appointment_Time: $("#Appointment_Time").val(),
+            Notes: $("#Notes").val(),
+            Schedule_Id: $("#Schedule_Id").val(),
+            Patient_Id: $("#Patient_Id").val()
+                       
+        };
+
+        alert(JSON.stringify(appObj));
+        //Create the Ajax to pass call the Action Method
+        //pass the object
+        //get the result
+        $.ajax({
+            url: "http://localhost:14189/api/Appointment/AddAppointment",
+            type: "POST",
+            data: appObj,
+            dataType: 'json',
+            success: function (result) {
+                //alert(result);
+                //hiding the modal
+                //debugger
+                $('#myModal').modal('hide');
+                //alert("hi");
+                //Load the data again so that we get the newly added data
+                loadData();
+            },
+            error: function (errormessage) {
+                //alert("error");
+                alert(errormessage.responseText);
+            }
+        });
+    }
+    //get by id
+    function getbyID(aid) {
+        $.ajax({
+            url: "http://localhost:14189/api/Appointment/GetAppointmentByNo/" + aid,
+            type: "GET",
+            // contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            success: function (result) {
+                //debugger
+                $('#Appointment_No').val(result.appointment_No);
+                $('#Appointment_Date').val(result.appointment_Date);
+                $('#Appointment_Time').val(result.appointment_Time);
+                $('#Notes').val(result.notes);
+                $('#Schedule_Id').val(result.schedule_Id);
+                $('#Patient_Id').val(result.patient_Id);
+                //to show thw modal/show/hide
+                $('#myModal').modal('show');
+                //show the update button
+                $('#btnUpdate').show();
+                //hiding the add button
+                $('#btnAdd').hide();
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+        return false;
+    }
+    //function to update the appointment
+    function Update() {
+          var res = validate();
+        if (res == false) {
+            return false;
+        }   
+        //we get the all the values and create the appointmentobject
+        var appObj = {
+            Appointment_No: $("#Appointment_No").val(),
+            Appointment_Date: $("#Appointment_Date").val(),
+            Appointment_Time: $("#Appointment_Time").val(),
+            Notes: $("#Notes").val(),
+            Schedule_Id: $("#Schedule_Id").val(),
+            Patient_Id: $("#Patient_Id").val()
+          };
+                 loadData();
+        //Create the Ajax to pass call the Action Method
+        //pass the object
+        //get the result
+        $.ajax({
+            url: "http://localhost:14189/api/Appointment/UpdateAppointment",
+            type: "PUT",
+            //contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+
+                //alert(result);
+                //hiding the modal
+                $('#myModal').modal('hide');
+                //alert("hi");
+                //Load the data again so that we get the newly added data
+                loadData();
+            },
+            error: function (errormessage) {
+                //alert("error");
+                alert(errormessage.responseText);
+            }
+        });
+    }
+    //write a code to show popup on delete
+    function Delele(aid) {
+    //store the aid into the Hidden text field
+        $('#appointmentno').val(aid);
+        $('#deleteModal').modal("show");
+    }
+
+    //Now write a code to delete the record from the table after confirm yes
+
+        function Delete() {
+            var aid = $('#appointmentno').val();
+            $.ajax({
+                url: "http://localhost:14189/api/Appointment/DeleteAppointment/" + aid,
+                type: "DELETE",
+                dataType: "json",
+                success: function (result) {
+                    //alert(result);
+                    $('#deleteModal').modal('hide');
+                    loadData();
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                }
+            });
+
+        }
+
+    //create a function clear the textbox
+    //and make the add bitton active
+    function clearTextBox() {
+        $('#Appointment_No').val("");
+        $('#Appointment_Date').val("");
+        $("#Appointment_Time").val("");
+        $("#Notes").val("");
+        $('#Appointment_Date').css('border-color', 'lightgrey');
+        $('#Appointment_Time').css('border-color', 'lightgrey');
+        $('#Notes').css('border-color', 'lightgrey');
+        
+       
+             
+    }
+    //create a function validate check the input values are given
+    function validate() {
+        var isValid = true;
+        var today = new Date();
+        var day = String(today.getDate()).padStart(2, '0');
+        var month = String(today.getMonth()+1).padStart(2, '0');
+        var year =String( today.getFullYear());
+
+        var date = year+'-'+month+'-'+day;
+        var apdate = $('#Appointment_Date').val().trim();
+        if ((apdate == "")||(apdate<=date)) {
+            $('#Appointment_Date').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#Appointment_Date').css('border-color', 'lightgrey');
+        }
+
+        var aptime = $('#Appointment_Time').val().trim();
+        var regfrom = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+        if ((aptime == "") || (!regfrom.test(aptime))) {
+            $('#Appointment_Time').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#Appointment_Time').css('border-color', 'lightgrey');
+        }
+
+        var notes = $('#Notes').val().trim();
+        if ((notes == "")) {
+            $('#Notes').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#Notes').css('border-color', 'lightgrey');
+        }
+        return isValid;
+    }
+
+</script>

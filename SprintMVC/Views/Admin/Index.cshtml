@@ -1,0 +1,475 @@
+﻿<script src="~/lib/jquery/dist/jquery.js"></script>
+<body style="background-color:#b3e6ff">
+<div class="container">
+    <h2>Doctors Record</h2>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="clearTextBox();">Add New Doctor</button><br />
+    <hr />
+    <br />
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr bgcolor="#66ccff">
+                <th>
+                    ID
+                </th>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Street
+                </th>
+                <th>
+                    City
+                </th>
+                <th>
+                    State
+                </th>
+                <th>
+                    Postal Code
+                </th>
+                <th>
+                    Phone Number
+                </th>
+                <th>
+                    Gender
+                </th>
+                <th>
+                    Specialization
+                </th>
+                <th>
+                    Description
+                </th>
+                <th>
+                    Fee
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+        </thead>
+        <tbody class="tbody">
+        </tbody>
+    </table>
+    <div>
+        <button type="button" class="btn btn-primary" onclick="location.href='/Admin/Mainn/';">Dashboard</button>
+    </div>
+</div>
+<hr />
+</body>
+<!-- create a modal myModal-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="MyModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Add Doctor</h4>
+            </div>
+            <div class="modal-body">
+                <form enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="Doctor_Id">ID</label>
+                        <input type="text" class="form-control" id="Doctor_Id" placeholder="Id" disabled="disabled" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Doctor_Name">Name</label>
+                        <input type="text" class="form-control" id="Doctor_Name" placeholder="Name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Doctor_Address">Address(Street)</label>
+                        <input type="text" class="form-control" id="Doctor_Address" placeholder="Address" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Doctor_City">City</label>
+                        <input type="text" class="form-control" id="Doctor_City" placeholder="City" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Doctor_State">State</label>
+                        <input type="text" class="form-control" id="Doctor_State" placeholder="State" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Doctor_Postal_Code">Postal Code</label>
+                        <input type="text" class="form-control" id="Doctor_Postal_Code" placeholder="Postal Code" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Doctor_Phone_No">Phone Number</label>
+                        <input type="text" class="form-control" id="Doctor_Phone_No" placeholder="Phone Number" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Doctor_Gender">Gender</label>
+                        <input type="text" class="form-control" id="Doctor_Gender" placeholder="(M/F)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Specialization">Specialization</label>
+                        <input type="text" class="form-control" id="Specialization" placeholder="Specialization" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Doctor_Description">Description</label>
+                        <input type="text" class="form-control" id="Doctor_Description" placeholder="Description" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Doctor_Fees">Fee</label>
+                        <input type="text" class="form-control" id="Doctor_Fees" placeholder="Fee" />
+                    </div>
+                </form>
+            </div>
+            <!-- Modal Footer-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnAdd" onclick="return Add();">Add</button>
+                <button type="button" class="btn btn-primary" id="btnUpdate" style="display:none;" onclick="Update();">Update</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- delete -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="myModalLabel1">Delete Doctor</h4>
+            </div>
+            <div class="modal-body">
+                <h5>Are you sure you want to delete this record?</h5>
+                <input type="text" id="empid" />
+            </div>
+            <!-- Modal Footer-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btndelete" onclick="return Delete();">Yes</button>
+
+                <button type="button" class="btn btn-success" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        loadData();
+    });
+</script>
+<script type="text/javascript">
+
+
+    function loadData() {
+        $.ajax({
+            url: "http://localhost:14189/api/doctor/GetDoctors",
+            type: "GET",
+            dataType: "json",
+            headers: {
+                Authorization: 'Bearer ' + sessionStorage.getItem("token")
+            },
+            success: function (result) {
+                var html = '';
+                $.each(result, function (key, item) {
+                    // debugger
+                    html += '<tr>';
+                    html += '<td>' + item.doctor_Id + '</td>';
+                    html += '<td>' + item.doctor_Name + '</td>';
+                    html += '<td>' + item.doctor_Address + '</td>';
+                    html += '<td>' + item.doctor_City + '</td>';
+                    html += '<td>' + item.doctor_State + '</td>';
+                    html += '<td>' + item.doctor_Postal_Code + '</td>';
+                    html += '<td>' + item.doctor_Phone_No + '</td>';
+                    html += '<td>' + item.doctor_Gender + '</td>';
+                    html += '<td>' + item.specialization + '</td>';
+                    html += '<td>' + item.doctor_Description + '</td>';
+                    html += '<td>' + item.doctor_Fees + '</td>';
+                    html += '<td><a href="#" class="btn btn-success" onclick="return getbyID(' + item.doctor_Id + ')">Edit</a> | <a href="#"  class="btn btn-danger" onclick="Delele(' + item.doctor_Id + ')">Delete</a></td>';
+                    html += '</tr>';
+                });
+                $('.tbody').html(html);
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+    }
+    function Add() {
+        var res = validate();
+        if (res == false) {
+            return false;
+        }
+        //creating the doctor Object passing the values from the textbox
+        var doctorObj = {
+            //Doctor_Id: $("#Doctor_Id").val(),
+            Doctor_Name: $("#Doctor_Name").val(),
+            Doctor_Address: $("#Doctor_Address").val(),
+            Doctor_City: $("#Doctor_City").val(),
+            Doctor_State: $("#Doctor_State").val(),
+            Doctor_Postal_Code: $("#Doctor_Postal_Code").val(),
+            Doctor_Phone_No: $("#Doctor_Phone_No").val(),
+            Doctor_Gender: $("#Doctor_Gender").val(),
+            Specialization: $("#Specialization").val(),
+            Doctor_Description: $("#Doctor_Description").val(),
+            Doctor_Fees: $("#Doctor_Fees").val()
+        };
+
+        alert(JSON.stringify(doctorObj));
+        //Create the Ajax to pass call the Action Method
+        //pass the object
+        //get the result
+        $.ajax({
+            url: "http://localhost:14189/api/doctor/AddDoctor",
+            type: "POST",
+            data: doctorObj,
+            dataType: 'json',
+            headers: {
+                Authorization: 'Bearer ' + sessionStorage.getItem("token")
+            },
+            success: function (result) {
+                //alert(result);
+                //hiding the modal
+                //debugger
+                $('#myModal').modal('hide');
+                //alert("hi");
+                //Load the data again so that we get the newly added data
+                loadData();
+            },
+            error: function (errormessage) {
+                //alert("error");
+                alert(errormessage.responseText);
+            }
+        });
+    }
+    //get by id
+    function getbyID(EmpID) {
+        $.ajax({
+            url: "http://localhost:14189/api/doctor/GetDoctor/" + EmpID,
+            type: "GET",
+            // contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            headers: {
+                Authorization: 'Bearer ' + sessionStorage.getItem("token")
+            },
+            success: function (result) {
+                //debugger
+                $('#Doctor_Id').val(result.doctor_Id);
+                $('#Doctor_Name').val(result.doctor_Name);
+                $('#Doctor_Address').val(result.doctor_Address);
+                $('#Doctor_City').val(result.doctor_City);
+                $('#Doctor_State').val(result.doctor_State);
+                $('#Doctor_Postal_Code').val(result.doctor_Postal_Code);
+                $('#Doctor_Phone_No').val(result.doctor_Phone_No);
+                $('#Doctor_Gender').val(result.doctor_Gender);
+                $('#Specialization').val(result.specialization);
+                $('#Doctor_Description').val(result.doctor_Description);
+                $('#Doctor_Fees').val(result.doctor_Fees);
+                //to show thw modal/show/hide
+                $('#myModal').modal('show');
+                //show the update button
+                $('#btnUpdate').show();
+                //hiding the add button
+                $('#btnAdd').hide();
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+        return false;
+    }
+    //wrining the function to update the Employee
+    function Update() {
+        var res = validate();
+        if (res == false) {
+            return false;
+        }
+        //we get the all the values and create the employeeobject
+        var doctorObj = {
+            Doctor_Id: $("#Doctor_Id").val(),
+            Doctor_Name: $("#Doctor_Name").val(),
+            Doctor_Address: $("#Doctor_Address").val(),
+            Doctor_City: $("#Doctor_City").val(),
+            Doctor_State: $("#Doctor_State").val(),
+            Doctor_Postal_Code: $("#Doctor_Postal_Code").val(),
+            Doctor_Phone_No: $("#Doctor_Phone_No").val(),
+            Doctor_Gender: $("#Doctor_Gender").val(),
+            Specialization: $("#Specialization").val(),
+            Doctor_Description: $("#Doctor_Description").val(),
+            Doctor_Fees: $("#Doctor_Fees").val()
+        };
+
+        //alert(JSON.stringify(employeeObj));
+        //Create the Ajax to pass call the Action Method
+        //pass the object
+        //get the result
+        $.ajax({
+            url: "http://localhost:14189/api/doctor/UpdateDoctor",
+            data: doctorObj,
+            type: "PUT",
+            //contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            headers: {
+                Authorization: 'Bearer ' + sessionStorage.getItem("token")
+            },
+            success: function (result) {
+
+                //alert(result);
+                //hiding the modal
+                $('#myModal').modal('hide');
+                //alert("hi");
+                //Load the data again so that we get the newly added data
+                loadData();
+            },
+            error: function (errormessage) {
+                //alert("error");
+                alert(errormessage.responseText);
+            }
+        });
+    }
+    //write a code to show popup on delete
+    function Delele(EmpID) {
+    //store the EmpIdD into the Hidden text field
+        $('#empid').val(EmpID);
+        $('#deleteModal').modal("show");
+    }
+
+    //Now write a code to delete the record from the table after confirm yes
+
+        function Delete() {
+            var EmpID = $('#empid').val();
+            $.ajax({
+                url: "http://localhost:14189/api/doctor/DeleteDoctor/" + EmpID,
+                type: "DELETE",
+                dataType: "json",
+                headers: {
+                    Authorization: 'Bearer ' + sessionStorage.getItem("token")
+                },
+                success: function (result) {
+                    //alert(result);
+                    $('#deleteModal').modal('hide');
+                    loadData();
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                }
+            });
+
+        }
+
+    //create a function clear the textbox
+    //and make the add bitton active
+    function clearTextBox() {
+        $('#Doctor_Id').val("");
+        $('#Doctor_Name').val("");
+        $("#Doctor_Address").val("");
+        $("#Doctor_City").val("");
+        $("#Doctor_State").val("");
+        $("#Doctor_Postal_Code").val("");
+        $("#Doctor_Phone_No").val("");
+        $("#Doctor_Gender").val("");
+        $("#Specialization").val("");
+        $("#Doctor_Description").val("");
+        $("#Doctor_Fees").val("");
+        $('#Doctor_Name').css('border-color', 'lightgrey');
+        $('#Doctor_Address').css('border-color', 'lightgrey');
+        $('#Doctor_City').css('border-color', 'lightgrey');
+        $('#Doctor_State').css('border-color', 'lightgrey');
+        $('#Doctor_Postal_Code').css('border-color', 'lightgrey');
+        $('#Doctor_Phone_No').css('border-color', 'lightgrey');
+        $('#Doctor_Gender').css('border-color', 'lightgrey');
+        $('#Specialization').css('border-color', 'lightgrey');
+        $('#Doctor_Description').css('border-color', 'lightgrey');
+        $('#Doctor_Fees').css('border-color', 'lightgrey');
+    }
+    //create a function validate check the input values are given
+    function validate() {
+        var isValid = true;
+        var name = $('#Doctor_Name').val().trim();
+        if ((name == "") || (name.length>20)) {
+            $('#Doctor_Name').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#Doctor_Name').css('border-color', 'lightgrey');
+        }
+        var address = $('#Doctor_Address').val().trim();
+        if ((address == "") || (address.length>50)) {
+            $('#Doctor_Address').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#Doctor_Address').css('border-color', 'lightgrey');
+        }
+
+        var city = $('#Doctor_City').val().trim();
+        if ((city == "") || (city.length>20)) {
+            $('#Doctor_City').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#Doctor_City').css('border-color', 'lightgrey');
+        }
+
+        var state = $('#Doctor_State').val().trim();
+        if ((state == "") || (state.length>20)) {
+            $('#Doctor_State').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#Doctor_State').css('border-color', 'lightgrey');
+        }
+
+        var postalcode = $('#Doctor_Postal_Code').val().trim();
+        if ((postalcode == "") || (!$.isNumeric(postalcode)) || (postalcode.length!=6)) {
+            $('#Doctor_Postal_Code').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#Doctor_Postal_Code').css('border-color', 'lightgrey');
+        }
+
+        var phoneno = $('#Doctor_Phone_No').val().trim();
+        if ((phoneno == "") || (!$.isNumeric(phoneno)) || (phoneno.length!=10)) {
+            $('#Doctor_Phone_No').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#Doctor_Phone_No').css('border-color', 'lightgrey');
+        }
+
+        var gender = $('#Doctor_Gender').val().trim();
+        if ((gender == "M") || (gender == "F")) {
+            $('#Doctor_Gender').css('border-color', 'lightgrey');
+        }
+        else {
+            $('#Doctor_Gender').css('border-color', 'Red');
+            isValid = false;
+        }
+        //if ((gender == "") || (gender != "M" || gender != "F")) {
+        //    $('#Doctor_Gender').css('border-color', 'Red');
+        //    isValid = false;
+        //}
+        //else {
+        //    $('#Doctor_Gender').css('border-color', 'lightgrey');
+        //}
+
+        var spcl = $('#Specialization').val().trim();
+        if ((spcl == "") || (spcl.length>50)) {
+            $('#Specialization').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#Specialization').css('border-color', 'lightgrey');
+        }
+
+        var desc = $('#Doctor_Description').val().trim();
+        if ((desc == "") || (desc.length>200)) {
+            $('#Doctor_Description').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#Doctor_Description').css('border-color', 'lightgrey');
+        }
+
+        var fee = $('#Doctor_Fees').val().trim();
+        if ((fee == "") || (!$.isNumeric(fee)) || (fee>3000) || (fee<50)) {
+            $('#Doctor_Fees').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#Doctor_Fees').css('border-color', 'lightgrey');
+        }
+
+        return isValid;
+    }
+
+</script>

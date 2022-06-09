@@ -1,0 +1,158 @@
+﻿@model Sprint.Models.Registration
+<body style="background-color: #02caca">
+<div>
+<img src="~/Images/img13.gif" asp-append-version="true"style=" float:left;width:470px;height:556px;">        
+
+<div style="background-color:#029797;">
+<br>
+<h2 style="padding-left: 400px;" align="center"><font color="white">REGISTER</font></h2>
+<br />
+    <form method="post" enctype="multipart/form-data" asp-controller="User" asp-action="Register" style="padding-left:490px;">
+        <div class="form-row">
+            <div class="col">
+                  <label><font color="white"><b>First Name</b></font></label>
+                  <input asp-for="FirstName" type="text" class="G" placeholder="First Name" required>
+               
+            </div>
+
+            <div class="col">
+                <label><font color="white"><b>Last Name</b></font></label>
+                <input asp-for="LastName" class="G" placeholder="Last Name" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col">
+                  <label><font color="white"><b>User Name</b></font></label>
+                  <input asp-for="UserName" class="G" placeholder="Username" required>
+            </div>
+
+            <div class="col">
+                <label><font color="white"><b>Email</b></font></label>
+                <input asp-for="Email" class="G" placeholder="Email" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col">
+                <label><font color="white"><b>Password</b></font></label>
+                <input asp-for="Password" type="password" class="G" placeholder="Password" required>
+            </div>
+
+            <div class="col">
+                <label><font color="white"><b>Phone Number</b></font></label>
+                <input asp-for="PhoneNumber" class="G" placeholder="PhoneNumber" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col">
+                <label><font color="white"><b>State</b></font></label>
+                <input asp-for="State" class="G" placeholder="State" required>
+            </div>
+
+            <div class="col">
+                <label><font color="white"><b>City</b></font></label>
+                <input asp-for="City" class="G" placeholder="City" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col">
+                 <label><font color="white"><b>Zip</b></font></label>
+                 <input asp-for="Zip" class="I" placeholder="Zip" required>
+            </div>
+        </div>
+
+        <br>
+        <div class="form-group" style="padding-left: 50px;">
+            <button type="button" onclick="return addUser();" class="btn btn-light">Register</button>
+            @*<button type="button" class="btn btn-light" onclick="return admin();">Register-admin</button>*@
+        </div>
+    </form>
+<br />
+</div>
+</div>
+<hr />
+</body>
+
+<script type="text/javascript">
+function addUser() {
+   AddProductAPI();
+}
+
+function AddProductAPI() {
+
+    var FName = $("#FirstName").val();
+    var LName = $("#LastName").val();
+    var UName = $("#UserName").val();
+    var Email = $("#Email").val();
+    var Pwd = $("#Password").val();
+    var Phone = $("#PhoneNumber").val();
+    var City = $("#City").val();
+    var State = $("#State").val();
+    var Zip = $("#Zip").val();
+
+     var data = {
+            FirstName: FName,
+            LastName: LName,
+            UserName: UName,
+            Email: Email,
+            PhoneNumber: Phone,
+            State: State,
+            City: City,
+            Zip: Zip,
+            Password: Pwd
+        };
+       alert("User Created");
+
+
+    $.ajax({    
+       url: "http://localhost:14189/user/register",
+        type: "POST",
+        data: data,
+        dataType: "json",
+        async: false,
+        success: function (result) {
+            location.replace("http://localhost:12122/user/login");
+            alert("Welcome");
+				
+		},
+        error: function (result) {
+            alert("User Not Created");
+            alert(result.responseText);
+			
+        }
+    });
+}
+
+function admin() {
+        var regobj = {
+            FirstName: $('#FirstName').val(),
+            LastName: $('#LastName').val(),
+            UserName: $('#UserName').val(),
+            Email: $('#Email').val(),
+            Password: $('#Password').val(),
+            PhoneNumber: $('#PhoneNumber').val(),
+            City: $('#City').val(),
+            State: $('#State').val(),
+            Zip: $('#Zip').val(),
+        };
+        $.ajax({
+            url: "http://localhost:14189/user/registeradmin",
+            data: regobj,
+            type: "POST",
+            datatype: "json",
+            async: false,
+            success: function (result) {
+                alert("sucess");
+                location.replace("http://localhost:12122/user/login");
+                alert("Welcome");
+            },
+            error: function (errormessage) {
+                alert("error");
+                alert(errormessage.responseText);
+            }
+        });
+    }
+</script>

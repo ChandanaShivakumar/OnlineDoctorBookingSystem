@@ -1,0 +1,75 @@
+﻿<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<body style="background-color: #ffe6e6">
+<div>
+<img src="~/Images/img12.gif" asp-append-version="true"style=" float:left;width:600px;height:421px;">        
+
+<div style="background-color:#ff9999;">
+<br>
+<h2 style="padding-left: 420px;" align="center"><font color="white">LOGIN</font></h2>
+<br />
+    <form asp-action="login" method="post" style="padding-left: 700px; align: center;">
+        <div class="form-group">
+          <label><font color="white"><b>User Name</b></font></label>
+          <input type="text" class="F" id="UserName" placeholder="UserName" required>
+        </div>
+
+        <div class="form-group">
+          <label><font color="white"><b>Password</b></font></label>
+          <input type="password" class="F" id="Password" placeholder="Password" required>
+
+          <input type="checkbox" onclick="myFunction()">&nbsp;<font color="white">show password</font>
+        </div>
+
+        <br />
+        <div class="form-group" style="padding-left: 50px;">
+            <button type="button" id="submit" onclick="return checkLogin();" class="btn btn-light">Log In</button>
+            <a asp-action="Register" class="btn btn-light">New user? Register</a>
+        </div>
+    </form>
+    <br />
+    <br />
+    
+</div>
+    </div>
+    <hr />
+</body>
+
+
+<script>
+    $(document).ready(function(){
+     
+    });
+ </script>
+<script>
+    function checkLogin() {
+        Email = $("#Email").val();
+        UserName = $("#UserName").val();
+        Password = $("#Password").val()
+        var data  = {
+            Email: Email,
+            UserName: UserName,
+            Password: Password
+        };
+    $.ajax({
+        url: "http://localhost:14189/user/login",
+        type: "POST",
+        data: data,
+        dataType: "json",
+        async: false,
+        success: function(result) {
+            sessionStorage.setItem("token", result.token);
+            sessionStorage.setItem("userId", result.id);
+            alert(sessionStorage.getItem("token"));
+                if (result.role == "Admin") {
+                    location.replace("http://localhost:12122/admin/mainn");
+                }
+                else {
+                    location.replace("http://localhost:12122/user/mainn");
+                }
+            },
+            error: function (errormessage) {
+                 alert(errormessage.responseText);
+            }
+    });
+}      
+</script>

@@ -1,0 +1,401 @@
+﻿<script src="~/lib/jquery/dist/jquery.js"></script>
+<body style="background-color:#b3ffcc">
+<div class="container">
+    <h2>Doctor Schedule Record</h2>
+@*    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="clearTextBox();">Add New Doctor Schedule</button><br />
+*@    <hr />
+    <br />
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr bgcolor="#4dff88">
+                <th>
+                    Schedule ID
+                </th>
+                <th>
+                    Doctor Name
+                </th>
+                <th>
+                    Number of Patients
+                </th>
+                <th>
+                    Available Days
+                </th>
+                <th>
+                    Available From
+                </th>
+                <th>
+                    Available To
+                </th>
+                <th>
+                    Doctor_Id
+                </th>
+                @*<th>
+                    Action
+                </th>*@
+            </tr>
+        </thead>
+        <tbody class="tbody">
+        </tbody>
+    </table>
+    <div>
+         <button type="button" class="btn btn-primary" onclick="location.href='/User/Mainn/';">Dashboard</button>
+         <button type="button" class="btn btn-primary" onclick="location.href='/User/DoctorList/';">Back</button>
+         <button type="button" class="btn btn-primary" onclick="location.href='/User/BookAppointment/';">Book Appointment</button>
+    </div>
+</div>
+<hr />
+</body>
+<!-- create a modal myModal-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="MyModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Add Doctor Schedule</h4>
+            </div>
+            <div class="modal-body">
+                <form enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="Schedule_Id">Schedule ID</label>
+                        <input type="text" class="form-control" id="Schedule_Id" placeholder="Id" disabled="disabled" />
+                    </div>
+                    <div class="form-group">
+                        <label for="No_Of_Patients">Number of Patients</label>
+                        <input type="text" class="form-control" id="No_Of_Patients" placeholder="Number of Patients" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Available_days">Available day</label>
+                        <input type="text" class="form-control" id="Available_days" placeholder="(Monday/Tuesday/Wednesday/Thursday/Friday/Saturday/Sunday)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="From_Time">From Time</label>
+                        <input type="text" class="form-control" id="From_Time" placeholder="(10:00:00)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="To_Time">To Time</label>
+                        <input type="text" class="form-control" id="To_Time" placeholder="(12:00:00)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Doctor_Id">Select Doctor</label>
+                        <div class="col-sm-7">
+                            <select id="Doctor_Id" class="form-control"></select>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <!-- Modal Footer-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnAdd" onclick="return Add();">Add</button>
+                <button type="button" class="btn btn-primary" id="btnUpdate" style="display:none;" onclick="Update();">Update</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- delete -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="myModalLabel1">Delete Doctor Schedule</h4>
+            </div>
+            <div class="modal-body">
+                <h5>Are you sure you want to delete this record?</h5>
+                <input type="text" id="empid" />
+            </div>
+            <!-- Modal Footer-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btndelete" onclick="return Delete();">Yes</button>
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+@*<script>
+        $(document).ready(function () {
+            loadData();
+        });
+    </script>*@
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var items = "<option value=0>Select</option>";
+        //we want to add this option to subcategory and Product
+        $('#Doctor_Id').html(items);
+        loadData();
+    });
+</script>
+
+<script type="text/javascript">
+
+
+    function loadData() {
+        $.ajax({
+            url: "http://localhost:14189/api/doctor/GetDoctors",
+            type: "GET",
+            dataType: "json",
+            headers: {
+                Authorization: 'Bearer ' + sessionStorage.getItem("token")
+            },
+            success: function (result) {
+                var html = '';
+                $('#Doctor_Id').empty();
+                var items = "";
+                items = "<option value=0>Select</option>";
+                //loop the data
+                //debugger
+                $.each(result, function (i, doctor) {
+                    //we create the option
+                    items += "<option value='" + doctor.doctor_Id + "'>" + doctor.doctor_Name + "</option>";
+                });
+                //add all the items into the dropdownlist
+                $('#Doctor_Id').html(items);
+                //$('.tbody').html(html);
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+        $.ajax({
+            url: "http://localhost:14189/api/doctorschedule/GetDoctorSchedules",
+            type: "GET",
+            dataType: "json",
+            headers: {
+                Authorization: 'Bearer ' + sessionStorage.getItem("token")
+            },
+            success: function (result) {
+                var html = '';
+                $.each(result, function (key, item) {
+                    // debugger
+                    html += '<tr>';
+                    html += '<td>' + item.schedule_Id + '</td>';
+                    html += '<td>' + item.doctorName + '</td>';
+                    html += '<td>' + item.no_Of_Patients + '</td>';
+                    html += '<td>' + item.available_days + '</td>';
+                    html += '<td>' + item.from_Time + '</td>';
+                    html += '<td>' + item.to_Time + '</td>';
+                    html += '<td>' + item.doctor_Id + '</td>';
+                   // html += '<td><a href="#" onclick="return getbyID(' + item.schedule_Id + ')">Edit</a> | <a href="#"   onclick="Delele(' + item.schedule_Id + ')">Delete</a></td>';
+                    html += '</tr>';
+                });
+                $('.tbody').html(html);
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+    }
+    function Add() {
+        var res = validate();
+        if (res == false) {
+            return false;
+        }
+        //creating the doctor Object passing the values from the textbox
+        var scheduleObj = {
+            //Schedule_Id: $("#Schedule_Id").val(),
+            No_Of_Patients: $("#No_Of_Patients").val(),
+            Available_days: $("#Available_days").val(),
+            From_Time: $("#From_Time").val(),
+            To_Time: $("#To_Time").val(),
+            Doctor_Id: $("#Doctor_Id").val()
+        };
+
+        alert(JSON.stringify(scheduleObj));
+        //Create the Ajax to pass call the Action Method
+        //pass the object
+        //get the result
+        $.ajax({
+            url: "http://localhost:14189/api/doctorschedule/AddDoctorSchedule",
+            type: "POST",
+            data: scheduleObj,
+            dataType: 'json',
+            headers: {
+                Authorization: 'Bearer ' + sessionStorage.getItem("token")
+            },
+            success: function (result) {
+                //alert(result);
+                //hiding the modal
+                //debugger
+                $('#myModal').modal('hide');
+                //alert("hi");
+                //Load the data again so that we get the newly added data
+                loadData();
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+    }
+    //get by id
+    function getbyID(EmpID) {
+        $.ajax({
+            url: "http://localhost:14189/api/doctorschedule/GetDoctorScheduleById/" + EmpID,
+            type: "GET",
+            // contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            headers: {
+                Authorization: 'Bearer ' + sessionStorage.getItem("token")
+            },
+            success: function (result) {
+                //debugger
+                $('#Schedule_Id').val(result.schedule_Id);
+                $('#No_Of_Patients').val(result.no_Of_Patients);
+                $('#Available_days').val(result.available_days);
+                $('#From_Time').val(result.from_Time);
+                $('#To_Time').val(result.to_Time);
+                $('#Doctor_Id').val(result.doctor_Id);
+                //to show thw modal/show/hide
+                $('#myModal').modal('show');
+                //show the update button
+                $('#btnUpdate').show();
+                //hiding the add button
+                $('#btnAdd').hide();
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+        return false;
+    }
+    //wrining the function to update the Employee
+    function Update() {
+        var res = validate();
+        if (res == false) {
+            return false;
+        }
+        //we get the all the values and create the employeeobject
+        var scheduleObj = {
+            Schedule_Id: $("#Schedule_Id").val(),
+            No_Of_Patients: $("#No_Of_Patients").val(),
+            Available_days: $("#Available_days").val(),
+            From_Time: $("#From_Time").val(),
+            To_Time: $("#To_Time").val(),
+            Doctor_Id: $("#Doctor_Id").val()
+        };
+
+        //alert(JSON.stringify(employeeObj));
+        //Create the Ajax to pass call the Action Method
+        //pass the object
+        //get the result
+        $.ajax({
+            url: "http://localhost:14189/api/doctorschedule/UpdateDoctorSchedule",
+            data: scheduleObj,
+            headers: {
+                Authorization: 'Bearer ' + sessionStorage.getItem("token")
+            },
+            type: "PUT",
+            //contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+
+                //alert(result);
+                //hiding the modal
+                $('#myModal').modal('hide');
+                //alert("hi");
+                //Load the data again so that we get the newly added data
+                loadData();
+            },
+            error: function (errormessage) {
+                //alert("error");
+                alert(errormessage.responseText);
+            }
+        });
+    }
+    //write a code to show popup on delete
+    function Delele(EmpID) {
+        //store the EmpIdD into the Hidden text field
+        $('#empid').val(EmpID);
+        $('#deleteModal').modal("show");
+    }
+
+    //Now write a code to delete the record from the table after confirm yes
+
+    function Delete() {
+        var EmpID = $('#empid').val();
+        $.ajax({
+            url: "http://localhost:14189/api/doctorschedule/DeleteDoctorSchedule/" + EmpID,
+            type: "DELETE",
+            dataType: "json",
+            headers: {
+                Authorization: 'Bearer ' + sessionStorage.getItem("token")
+            },
+            success: function (result) {
+                //alert(result);
+                $('#deleteModal').modal('hide');
+                loadData();
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+
+    }
+
+    //create a function clear the textbox
+    //and make the add bitton active
+    function clearTextBox() {
+        $('#Schedule_Id').val("");
+        $('#No_Of_Patients').val("");
+        $("#Available_days").val("");
+        $("#From_Time").val("");
+        $("#To_Time").val("");
+        $('#No_Of_Patients').css('border-color', 'lightgrey');
+        $('#Available_days').css('border-color', 'lightgrey');
+        $('#From_Time').css('border-color', 'lightgrey');
+        $('#To_Time').css('border-color', 'lightgrey');
+    }
+    //create a function validate check the input values are given
+    function validate() {
+        var isValid = true;
+        var noofpatient = $('#No_Of_Patients').val().trim();
+        if ((noofpatient == "") || (!$.isNumeric(noofpatient)) || (noofpatient == 0) || (noofpatient>50)) {
+            $('#No_Of_Patients').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#No_Of_Patients').css('border-color', 'lightgrey');
+        }
+        var days = $('#Available_days').val().trim();
+        if ((days == "Monday") || (days == "Tuesday") || (days == "Wednesday") || (days == "Thursday") || (days == "Friday") || (days == "Saturday") || (days == "Sunday")) {
+            $('#Available_days').css('border-color', 'lightgrey');
+        }
+        else {
+            $('#Available_days').css('border-color', 'Red');
+            isValid = false;
+        }
+        //if ((days == "")) {
+        //    $('#Available_days').css('border-color', 'Red');
+        //    isValid = false;
+        //}
+        //else {
+        //    $('#Available_days').css('border-color', 'lightgrey');
+        //}
+
+        var ftime = $('#From_Time').val().trim();
+        var regfrom = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+        //var regfrom = /^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+        if ((ftime == "") || (!regfrom.test(ftime))) {
+            $('#From_Time').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#From_Time').css('border-color', 'lightgrey');
+        }
+
+        var ttime = $('#To_Time').val().trim();
+        var regto = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+        if ((ttime == "") || (!regto.test(ttime)) || (ftime > ttime)) {
+            $('#To_Time').css('border-color', 'Red');
+            isValid = false;
+        }
+        else {
+            $('#To_Time').css('border-color', 'lightgrey');
+        }
+        return isValid;
+    }
+
+</script>
+
